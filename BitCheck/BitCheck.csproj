@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Knapcode.TorSharp" Version="2.12.0" />
+    <PackageReference Include="NBitcoin" Version="7.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BIP39">
+      <HintPath>C:\Users\aleks\Desktop\BIP39.dll</HintPath>
+    </Reference>
+    <Reference Include="BitcoinUtilities">
+      <HintPath>C:\Users\aleks\Desktop\BitcoinUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>C:\Users\aleks\Desktop\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <HintPath>C:\Program Files (x86)\dotnet\shared\Microsoft.WindowsDesktop.App\3.1.24\PresentationFramework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
