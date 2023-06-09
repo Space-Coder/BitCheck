@@ -8,7 +8,6 @@ namespace BitCheck
     {
         public string Adress { get; set; }
         public string Seed { get; set; }
-
         public int Balance { get; set; }
     }
 }

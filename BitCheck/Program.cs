@@ -35,13 +35,13 @@ namespace BitCheck
         };
         private static TorSharpProxy proxy;
 
-        public static int bipIndex;
+        public static int keyPath;
         public static int errorCount = 0;
         public static Dictionary<string, Balance> CurrentWalletInfo { get; set; }
         public static List<AliveWallet> aliveWallets = new List<AliveWallet>();
         public static List<AliveWallet> maybeAliveWallets = new List<AliveWallet>();
         public static List<Thread> AppThreads = new List<Thread>();
-        public static string[] BIPS = new string[] { "m/0/0", "m/44'/0'/0'/0/0", "m/49'/0'/0'/0/0", "m/84'/0'/0'/0/0" };
+        public static string[] keyPaths = new string[] { "m/0/0", "m/44'/0'/0'/0/0", "m/49'/0'/0'/0/0", "m/84'/0'/0'/0/0" };
         private static BIP39 bip;
         static async Task Main(string[] args)
         {
@@ -58,13 +58,15 @@ namespace BitCheck
                 Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
             };
             _httpClient = new HttpClient(handler);
+
             var result = _httpClient.GetStringAsync("https://check.torproject.org/api/ip").Result.ToString();
+            
             Console.WriteLine();
             Console.WriteLine("Are we using Tor?");
             Console.WriteLine(result);
             Console.WriteLine();
-            Console.WriteLine("Enter BIP: \n 0. BIP32 \n 1. BIP44 \n 2. BIP49 \n 3. BIP84");
-            bipIndex = int.Parse(Console.ReadLine());
+            Console.WriteLine("Enter Derivation path: \n 0. m/0/0 \n 1. m/44' \n 2. m/49' \n 3. m/84' ");
+            keyPath = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter thread's count:");
             int threadCount = int.Parse(Console.ReadLine());
 
@@ -78,27 +80,21 @@ namespace BitCheck
         }
 
         private static object locker = new object();
-
         public async static void Execute(object? obj)
         {
             try
             {
                 do
                 {
-                   
                     bip = await BIP39.GetBIP39Async(128, "", BIP39.Language.English);
-                    //Console.WriteLine(bip.MnemonicSentence);
-
                     Mnemonic resoteMnemonic = new Mnemonic(bip.MnemonicSentence);
                     ExtKey masterKey = resoteMnemonic.DeriveExtKey();
-                    KeyPath keyPath = new KeyPath(BIPS[bipIndex]);
-                    ExtKey key = masterKey.Derive(keyPath);
+                    KeyPath derivationPath = new KeyPath(keyPaths[keyPath]);
+                    ExtKey key = masterKey.Derive(derivationPath);
 
                     string adress = key.PrivateKey.PubKey.GetAddress(ScriptPubKeyType.Segwit, Network.Main).ToString();
 
                     HttpResponseMessage response = await _httpClient.GetAsync("https://blockchain.info/balance?active=" + adress);
-
-
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -162,7 +158,6 @@ namespace BitCheck
                        
                         Console.WriteLine(response.StatusCode.ToString());
                         Console.WriteLine(response.ReasonPhrase);
-                        
                     }
 
                 } while (true);
